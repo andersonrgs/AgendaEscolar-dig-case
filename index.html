@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sintonia Kids - Agenda Digital Escolar Infantil</title>
+
+  <!-- PWA & Mobile Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1E6F9F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Sintonia Kids">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+
+  <!-- Tailwind CSS & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase JS Client (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      background-color: #f7f5ed;
+      background-image: 
+        radial-gradient(#e5dec9 0.8px, transparent 0.8px),
+        radial-gradient(#e5dec9 0.8px, #f7f5ed 0.8px);
+      background-size: 32px 32px;
+      background-position: 0 0, 16px 16px;
+    }
+
+    .font-handwriting {
+      font-family: 'Caveat', cursive;
+    }
+    .font-brand {
+      font-family: 'Comfortaa', cursive;
+    }
+
+    /* Efeito de caderno espiral / agenda física */
+    .notebook-spine {
+      background: repeating-linear-gradient(
+        to right,
+        transparent,
+        transparent 28px,
+        #475569 28px,
+        #475569 32px,
+        #94a3b8 32px,
+        #94a3b8 36px,
+        #cbd5e1 36px,
+        #cbd5e1 40px
+      );
+      height: 22px;
+    }
+
+    .notebook-page {
+      background: #fffdfa;
+      box-shadow: 
+        0 1px 1px rgba(0,0,0,0.06), 
+        0 4px 6px -1px rgba(0,0,0,0.08),
+        0 15px 25px -5px rgba(0,0,0,0.06),
+        inset -2px 0 6px rgba(0,0,0,0.02);
+      border: 1px solid #ebd9bf;
+    }
+
+    /* Linhas pautadas de caderno */
+    .lined-paper {
+      background-image: linear-gradient(#eaf0f6 1px, transparent 1px);
+      background-size: 100% 26px;
+      line-height: 26px;
+    }
+
+    /* Carimbo escolar */
+    .stamp-badge {
+      border: 2px dashed #74c043;
+      transform: rotate(-3deg);
+    }
+    .stamp-certified {
+      border: 2px solid #eb5e8d;
+      transform: rotate(2deg);
+    }
+
+    /* Fita adesiva estilo washi tape */
+    .washi-tape {
+      background-color: rgba(254, 240, 138, 0.7);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      position: relative;
+    }
+    .washi-tape::before, .washi-tape::after {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 5px;
+      background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    }
+    .washi-tape::before { left: 0; }
+    .washi-tape::after { right: 0; }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- ============================================================== -->
+  <!-- TELA 1: LOGIN (CAPA DA AGENDA ESCOLAR ALGODÃO DOCE) -->
+  <!-- ============================================================== -->
+  <div id="screen-login" class="min-h-screen w-full flex items-center justify-center p-4">
+    <div class="max-w-md w-full relative">
+      
+      <!-- Fita Adesiva decorativa no topo -->
+      <div class="washi-tape w-32 h-6 mx-auto -mb-3 z-20 rounded-sm transform -rotate-1"></div>
+
+      <!-- CAPA DA AGENDA FÍSICA -->
+      <div class="notebook-page rounded-3xl p-6 sm:p-8 shadow-2xl relative border-2 border-[#e6cca8] space-y-5">
+        
+        <!-- ESPIRAL DO CADERNO -->
+        <div class="notebook-spine w-full rounded-md -mt-2 mb-3 opacity-80"></div>
+
+        <!-- LOGOTIPO SINTONIA KIDS -->
+        <div class="text-center space-y-2">
+          <div class="inline-block relative">
+            <img src="assets/logo.jpg" alt="Sintonia Kids" class="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-2xl object-cover shadow-md border-2 border-emerald-400">
+            <span class="absolute -bottom-2 -right-1 bg-amber-400 text-amber-950 font-handwriting text-base font-bold px-2 py-0.5 rounded-full shadow rotate-6">
+              Escola Modelo
+            </span>
+          </div>
+          <div>
+            <h1 class="text-2xl font-black tracking-tight text-slate-800 font-brand">
+              <span class="text-[#1E6F9F]">Sintonia</span> <span class="text-[#10B981]">Kids</span>
+            </h1>
+            <p class="text-xs text-slate-500 font-semibold tracking-wide uppercase">Agenda Digital Escolar Infantil</p>
+            <div class="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[11px] font-bold">
+              <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Demonstração de Arquitetura</span>
+            </div>
+            <div>
+              <a href="showcase.html" class="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-300 text-[#1E6F9F] text-xs font-black shadow-xs transition">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>Showcase Interativo & Telas do MVP</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORMULÁRIO ESTILO CADERNO -->
+        <form onsubmit="handleFormLogin(event)" class="space-y-3.5 pt-2">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Código da Escola:</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i data-lucide="school" class="w-4 h-4 text-emerald-600"></i></span>
+              <input type="text" id="login-escola" value="escola01" placeholder="escola01" required class="w-full pl-9 pr-3 py-2.5 bg-amber-50/50 border border-amber-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Usuário / Identificação:</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i data-lucide="user" class="w-4 h-4 text-[#3ba3db]"></i></span>
+              <input type="text" id="login-usuario" value="tania" placeholder="Ex: tania, patricia, prof1, mae1..." required class="w-full pl-9 pr-3 py-2.5 bg-sky-50/50 border border-sky-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Senha:</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i data-lucide="lock" class="w-4 h-4 text-[#eb5e8d]"></i></span>
+              <input type="password" id="login-senha" value="teste123" placeholder="••••••••" required class="w-full pl-9 pr-3 py-2.5 bg-rose-50/40 border border-rose-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+
+          <button type="submit" class="w-full touch-target py-3 rounded-2xl bg-gradient-to-r from-[#74c043] to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-sm shadow-md shadow-emerald-600/30 active:scale-95 transition flex items-center justify-center gap-2">
+            <span>Abrir Agenda Escolar</span>
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </button>
+        </form>
+
+        <!-- ATALHOS RÁPIDOS CLICÁVEIS (MODO DEMONSTRAÇÃO) -->
+        <div class="pt-4 border-t-2 border-dashed border-amber-300 space-y-3">
+          
+          <!-- BANNER AMARLO COM FONTE VERMELHA EM NEGRITO + SETAS INDICADORAS -->
+          <div class="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-300 border-2 border-yellow-400 p-3 rounded-2xl shadow-sm text-center">
+            <div class="flex items-center justify-center gap-2 text-red-600 font-black text-xs sm:text-sm tracking-wide uppercase">
+              <span class="text-base sm:text-lg animate-bounce">⬇</span>
+              <span>CLIQUE PARA ENTRAR DIRETO — MODO DEMONSTRAÇÃO</span>
+              <span class="text-base sm:text-lg animate-bounce">⬇</span>
+            </div>
+            <p class="text-[11px] font-extrabold text-red-700 mt-1 flex items-center justify-center gap-1">
+              <span>👉</span> Toque em qualquer perfil abaixo para acessar na hora: <span>👈</span>
+            </p>
+          </div>
+
+          <!-- BLOCO 1: 2 DIRETORAS (TÂNIA E PATRÍCIA) -->
+          <div>
+            <div class="flex items-center gap-1.5 mb-1.5 px-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-amber-200"></span>
+              <span class="text-[11px] font-black text-amber-900 uppercase tracking-wider">Diretoria & Coordenação:</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button type="button" onclick="loginWithUsername('tania')" class="p-2.5 rounded-xl border-2 border-amber-300 bg-amber-50/90 hover:bg-amber-100 hover:border-amber-500 flex items-center gap-2 text-left shadow-xs transition hover:scale-[1.02]">
+                <span class="p-1.5 rounded-lg bg-amber-200 text-amber-900 font-black"><i data-lucide="crown" class="w-4 h-4 text-amber-800"></i></span>
+                <div class="truncate">
+                  <p class="font-extrabold text-slate-900 leading-tight text-xs">Diretoria</p>
+                  <p class="text-[10px] text-amber-800 font-bold">Gestão Geral</p>
+                </div>
+              </button>
+
+              <button type="button" onclick="loginWithUsername('patricia')" class="p-2.5 rounded-xl border-2 border-amber-300 bg-amber-50/90 hover:bg-amber-100 hover:border-amber-500 flex items-center gap-2 text-left shadow-xs transition hover:scale-[1.02]">
+                <span class="p-1.5 rounded-lg bg-amber-200 text-amber-900 font-black"><i data-lucide="crown" class="w-4 h-4 text-amber-800"></i></span>
+                <div class="truncate">
+                  <p class="font-extrabold text-slate-900 leading-tight text-xs">Coordenação</p>
+                  <p class="text-[10px] text-amber-800 font-bold">Pedagógica</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- BLOCO 2: CORPO DOCENTE (PROFESSORAS E AUXILIARES) -->
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-1.5 px-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-200"></span>
+              <span class="text-[11px] font-black text-emerald-900 uppercase tracking-wider">Professores e Auxiliares:</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button type="button" onclick="loginWithUsername('prof1')" class="p-2 rounded-xl border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 flex items-center gap-2 text-left transition hover:scale-[1.01]">
+                <span class="p-1.5 rounded-lg bg-emerald-200 text-emerald-800"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></span>
+                <div class="truncate"><p class="font-bold text-slate-900 text-xs">prof1</p><p class="text-[10px] text-emerald-700 font-medium truncate">Profª Berçário</p></div>
+              </button>
+
+              <button type="button" onclick="loginWithUsername('prof2')" class="p-2 rounded-xl border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 flex items-center gap-2 text-left transition hover:scale-[1.01]">
+                <span class="p-1.5 rounded-lg bg-emerald-200 text-emerald-800"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i></span>
+                <div class="truncate"><p class="font-bold text-slate-900 text-xs">prof2</p><p class="text-[10px] text-emerald-700 font-medium truncate">Profª Maternal</p></div>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+              <button type="button" onclick="loginWithUsername('profax1')" class="p-2 rounded-xl border border-teal-200 bg-teal-50/70 hover:bg-teal-100 flex items-center gap-1.5 text-left transition">
+                <span class="p-1 rounded-lg bg-teal-200 text-teal-800"><i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i></span>
+                <div class="truncate"><p class="font-bold text-slate-800 text-[11px]">profax1</p><p class="text-[9px] text-slate-600 truncate">Aux. Berçário</p></div>
+              </button>
+              <button type="button" onclick="loginWithUsername('profax2')" class="p-2 rounded-xl border border-teal-200 bg-teal-50/70 hover:bg-teal-100 flex items-center gap-1.5 text-left transition">
+                <span class="p-1 rounded-lg bg-teal-200 text-teal-800"><i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i></span>
+                <div class="truncate"><p class="font-bold text-slate-800 text-[11px]">profax2</p><p class="text-[9px] text-slate-600 truncate">Aux. Maternal</p></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- BLOCO 3: FAMÍLIA E PORTARIA -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <!-- FAMÍLIA (MULTI-FILHOS EM TURMAS DIFERENTES) -->
+            <button type="button" onclick="loginWithUsername('mae1')" class="p-2.5 rounded-xl border-2 border-rose-200 bg-rose-50/90 hover:bg-rose-100/90 flex items-center justify-between text-left transition hover:scale-[1.01]">
+              <div class="flex items-center gap-2 truncate">
+                <span class="p-1.5 rounded-lg bg-rose-200 text-rose-800"><i data-lucide="heart" class="w-3.5 h-3.5"></i></span>
+                <div class="truncate">
+                  <p class="font-bold text-slate-900 text-xs">mae1 (Família)</p>
+                  <p class="text-[10px] text-rose-700 font-bold truncate">2 Filhos (Berçário e Mat.)</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-rose-200 text-rose-800 shrink-0">Entrar</span>
+            </button>
+
+            <!-- PORTARIA SEGURA -->
+            <button type="button" onclick="loginWithUsername('portaria01')" class="p-2.5 rounded-xl border-2 border-indigo-200 bg-indigo-50/90 hover:bg-indigo-100/90 flex items-center justify-between text-left transition hover:scale-[1.01]">
+              <div class="flex items-center gap-2 truncate">
+                <span class="p-1.5 rounded-lg bg-indigo-200 text-indigo-800"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i></span>
+                <div class="truncate">
+                  <p class="font-bold text-slate-900 text-xs">portaria01</p>
+                  <p class="text-[10px] text-slate-500 truncate">Controle de Saída</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-indigo-200 text-indigo-800 shrink-0">Entrar</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- TELA 2: APLICAÇÃO LOGADA (DESIGN DE CADERNO / AGENDA FÍSICA) -->
+  <!-- ============================================================== -->
+  <div id="screen-app" class="flex-1 flex flex-col hidden pb-20">
+
+    <!-- CABEÇALHO DA ESCOLINHA -->
+    <header class="bg-[#fffdfa] border-b-2 border-[#ebd9bf] sticky top-0 z-40 shadow-sm">
+      <div class="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
+        
+        <!-- LOGO + NOME -->
+        <div class="flex items-center gap-3">
+          <img src="assets/logo.jpg" alt="Sintonia Kids" class="w-10 h-10 rounded-xl object-cover ring-2 ring-[#1E6F9F] shadow-sm">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-base font-black font-brand text-[#1E6F9F]">Sintonia</span>
+              <span class="text-base font-black font-brand text-[#10B981]">Kids</span>
+              <span class="hidden sm:inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-sky-100 text-[#1E6F9F] border border-sky-300">Escola Modelo</span>
+            </div>
+            <p id="header-user-welcome" class="text-[11px] text-slate-600 font-semibold leading-tight">Logado como: Diretoria</p>
+          </div>
+        </div>
+
+        <!-- AÇÕES DO TOPO: BOTÃO INSTALAR PWA + SAIR -->
+        <div class="flex items-center gap-2">
+          
+          <!-- BOTÃO INSTALAR VIA CHROME / SAFARI -->
+          <button onclick="openInstallModal()" class="touch-target flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-amber-950 text-xs font-extrabold shadow-sm active:scale-95 transition">
+            <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+            <span class="hidden xs:inline">Instalar App</span>
+            <span class="xs:hidden">Instalar</span>
+          </button>
+
+          <!-- SAIR -->
+          <button onclick="logout()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-300 hover:bg-rose-50 hover:text-rose-600 text-slate-600 text-xs font-bold transition">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Sair</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- BANNER PWA / INSTALAÇÃO RÁPIDA (SE DISPONÍVEL) -->
+    <div id="pwa-install-banner" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between shadow-inner">
+      <div class="flex items-center gap-2">
+        <i data-lucide="download-cloud" class="w-4 h-4 animate-bounce"></i>
+        <span>Adicione a <strong>Agenda Sintonia Kids</strong> na tela inicial do seu celular!</span>
+      </div>
+      <button onclick="openInstallModal()" class="px-2.5 py-1 rounded-lg bg-white text-emerald-800 font-bold text-[11px] shadow hover:bg-emerald-50 transition">
+        Como Instalar
+      </button>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL (COM BORDAS E FOLHA PAUTADA DE AGENDA) -->
+    <main class="max-w-4xl mx-auto px-3 sm:px-4 py-4 w-full flex-1">
+      
+      <!-- ESPIRAL VISUAL DE CADERNO -->
+      <div class="notebook-spine w-full rounded-t-xl opacity-75"></div>
+
+      <!-- FOLHA DA AGENDA -->
+      <div class="notebook-page rounded-b-3xl p-4 sm:p-6 space-y-5">
+
+        <!-- ============================================================== -->
+        <!-- VIEW: DIRETORIA -->
+        <!-- ============================================================== -->
+        <section id="role-view-diretoria" class="space-y-5 hidden">
+          <div class="bg-amber-50/80 border-2 border-amber-200 p-4 sm:p-5 rounded-2xl relative">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Painel Administrativo</span>
+                <h2 class="text-lg font-black text-slate-800 font-brand">Escola Modelo Horizonte</h2>
+              </div>
+              <span class="stamp-badge px-3 py-1 bg-white text-emerald-800 text-xs font-extrabold rounded-lg shadow-sm">
+                Ano Letivo 2026
+              </span>
+            </div>
+
+            <!-- CARDS DE METAS -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-slate-800">
+              <div class="bg-white p-3 rounded-xl border border-amber-200 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">Matrículas</span>
+                <p class="text-2xl font-black text-[#3ba3db]">4 alunos</p>
+                <span class="text-[10px] text-emerald-700 font-bold">100% frequência</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-amber-200 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">Turminhas</span>
+                <p class="text-2xl font-black text-[#eb5e8d]">2 salas</p>
+                <span class="text-[10px] text-slate-500 font-medium">Berçário e Maternal</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-amber-200 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">Educadoras</span>
+                <p class="text-2xl font-black text-[#74c043]">4 profs</p>
+                <span class="text-[10px] text-slate-500 font-medium">prof1, prof2, profax</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-amber-200 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">Mochilas</span>
+                <p class="text-2xl font-black text-amber-600">1 alerta</p>
+                <span class="text-[10px] text-amber-700 font-bold">Fraldas da Alice</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- LISTA DE ALUNOS -->
+          <div class="space-y-3">
+            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+              <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
+              <span>Alunos Matriculados na Escolinha</span>
+            </h3>
+            <div class="divide-y divide-amber-100 bg-white rounded-2xl border border-amber-200/80 p-3 text-xs">
+              <div class="py-2.5 flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-slate-900">Alice Rocha • Berçário I (Estrelinhas)</p>
+                  <p class="text-slate-500 text-[11px]">Responsáveis: Mariana e Carlos (mae1 / pai1) • <span class="text-rose-600 font-bold">Alérgica a Amendoim</span></p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Matriculada</span>
+              </div>
+              <div class="py-2.5 flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-slate-900">Theo Souza • Berçário I (Estrelinhas)</p>
+                  <p class="text-slate-500 text-[11px]">Responsável: Patrícia (mae2) • Turno Integral</p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Matriculado</span>
+              </div>
+              <div class="py-2.5 flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-slate-900">Helena Duarte • Maternal II (Arco-Íris)</p>
+                  <p class="text-slate-500 text-[11px]">Responsáveis: Mariana e Carlos (mae1 / pai1) • <span class="text-amber-600 font-bold">Intolerância à Lactose</span></p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Matriculada</span>
+              </div>
+              <div class="py-2.5 flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-slate-900">Gael Ferreira • Maternal II (Arco-Íris)</p>
+                  <p class="text-slate-500 text-[11px]">Responsável: Lucas (pai2) • Turno Tarde</p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Matriculado</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COMUNICADO INSTITUCIONAL -->
+          <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-200/80 space-y-2">
+            <h4 class="font-bold text-xs text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="megaphone" class="w-4 h-4 text-emerald-600"></i>
+              <span>Enviar Recado Geral para os Pais (Web Push)</span>
+            </h4>
+            <textarea id="input-comunicado-geral" rows="2" placeholder="Ex: Amanhã teremos piquenique no pátio com fantasias infantis..." class="w-full bg-white border border-amber-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-emerald-500"></textarea>
+            <div class="flex justify-end">
+              <button onclick="dispararComunicado()" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 shadow transition">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                <span>Disparar Comunicado</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- VIEW: PROFESSORAS (DIÁRIO DE BORDO COMPLETO) -->
+        <!-- ============================================================== -->
+        <section id="role-view-professor" class="space-y-4 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-emerald-50/70 border border-emerald-200 p-3.5 rounded-2xl">
+            <div>
+              <span class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Professora da Turma</span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <select id="select-turma-prof" onchange="filterTurma(this.value)" class="bg-white border border-emerald-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800">
+                  <option value="all">Todas as Turmas da Escola</option>
+                  <option value="b1000000-0000-0000-0000-000000000001" selected>Berçário I (Estrelinhas)</option>
+                  <option value="b2000000-0000-0000-0000-000000000002">Maternal II (Arco-Íris)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- LANÇAMENTO EM LOTE -->
+            <button onclick="openModalLote()" class="touch-target flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#74c043] to-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 active:scale-95 transition">
+              <i data-lucide="zap" class="w-4 h-4 fill-white"></i>
+              <span>Lançamento em Lote (< 15s)</span>
+            </button>
+          </div>
+
+          <div id="alunos-list-prof" class="space-y-4"></div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- VIEW: PROFESSORA AUXILIAR (APOIO) -->
+        <!-- ============================================================== -->
+        <section id="role-view-auxiliar" class="space-y-4 hidden">
+          <div class="bg-teal-50 border border-teal-200 p-3.5 rounded-2xl flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-teal-900 text-sm">Painel de Apoio • Profª Auxiliar</h3>
+              <p class="text-xs text-teal-700">Focado em cuidados rápidos de sala: trocas de fralda, água e soninho.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-teal-200 text-teal-800 font-extrabold text-[10px]">Apoio em Sala</span>
+          </div>
+
+          <div id="alunos-list-aux" class="space-y-4"></div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- VIEW: FAMÍLIA (MULTI-FILHOS EM TURMAS DIFERENTES) -->
+        <!-- ============================================================== -->
+        <section id="role-view-familia" class="space-y-4 hidden">
+          
+          <!-- SELETOR DE FILHOS ESTILO ABA DE CADERNO -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Meus Filhos na Escola:</span>
+              <span id="familia-child-count-tag" class="text-xs font-handwriting text-base font-bold text-[#eb5e8d]">2 Crianças</span>
+            </div>
+            <div class="flex items-center gap-2" id="familia-children-tabs"></div>
+          </div>
+
+          <!-- ALERTA DE MOCHILA / INSUMOS -->
+          <div id="familia-insumos-alerta" class="p-4 rounded-2xl border flex items-start gap-3 shadow-sm transition"></div>
+
+          <!-- DIÁRIO FÍSICO COM CARIMBO DE CIÊNCIA -->
+          <div class="bg-white rounded-2xl border-2 border-amber-200/80 p-4 sm:p-5 space-y-4 shadow-sm relative">
+            
+            <div class="flex items-center justify-between border-b border-amber-100 pb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <i data-lucide="book" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-900 text-sm">Folha de Rotina Diária</h3>
+                  <p class="text-[11px] text-slate-500" id="familia-data-label">16 de Novembro de 2026</p>
+                </div>
+              </div>
+
+              <!-- BOTÃO DE CIÊNCIA (CARIMBO) -->
+              <button id="familia-btn-doublecheck" onclick="confirmarCienciaDiario()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm"></button>
+            </div>
+
+            <!-- ITENS DA ROTINA -->
+            <div id="familia-timeline" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1"></div>
+
+            <!-- RECADO DA PROFESSORA ESTILO POST-IT / LINHA PAUTADA -->
+            <div class="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl relative">
+              <span class="washi-tape w-20 h-4 absolute -top-2 left-4 rounded-sm"></span>
+              <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1 pt-1">
+                <i data-lucide="pencil" class="w-3.5 h-3.5 text-amber-700"></i>
+                <span>Recadinho da Professora Titular:</span>
+              </div>
+              <p id="familia-obs" class="text-xs text-slate-700 font-handwriting text-base leading-snug"></p>
+            </div>
+          </div>
+
+          <!-- PORTARIA SEGURA COM CÓDIGO PIN -->
+          <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-teal-950 text-white p-5 rounded-2xl shadow-lg space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-amber-300">
+                  <i data-lucide="key" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm">Portaria Segura</h3>
+                  <p class="text-[11px] text-slate-300">Código de saída para pessoa autorizada</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Auditável</span>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+              <div>
+                <p class="text-xs text-slate-300">PIN de Liberação Hoje:</p>
+                <div class="text-3xl font-black tracking-widest text-amber-400 font-mono mt-0.5" id="familia-pin-code">8492</div>
+              </div>
+              <button onclick="gerarNovoPin()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold flex items-center gap-1.5 transition">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>Novo PIN</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- MEDICAMENTO DO DIA -->
+          <div class="bg-white p-4 rounded-2xl border border-amber-200/80 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center"><i data-lucide="pill" class="w-4 h-4"></i></div>
+                <h3 class="font-bold text-slate-900 text-sm">Remédio do Dia</h3>
+              </div>
+              <button onclick="openModalMedicao()" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                <span>Adicionar</span>
+              </button>
+            </div>
+            <div id="familia-medicacao-box" class="space-y-2"></div>
+          </div>
+
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- VIEW: PORTARIA -->
+        <!-- ============================================================== -->
+        <section id="role-view-portaria" class="space-y-4 hidden">
+          <div class="bg-white p-5 rounded-2xl border border-amber-200/80 shadow-sm space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                <i data-lucide="scan" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h2 class="font-bold text-slate-900 text-base">Portaria Escolar • Validador de Saída</h2>
+                <p class="text-xs text-slate-500">Valide a retirada da criança informando o PIN autorizado</p>
+              </div>
+            </div>
+
+            <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200 space-y-3">
+              <label class="block text-xs font-bold text-slate-700">Digite o PIN do Responsável / Terceiro:</label>
+              <div class="flex gap-2">
+                <input type="text" id="input-pin-portaria" maxlength="6" placeholder="Ex: 8492" class="w-44 text-center tracking-widest font-mono text-xl font-bold px-3 py-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <button onclick="validarSaidaPin()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl px-4 py-2 flex items-center justify-center gap-2 shadow-sm transition">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i>
+                  <span>Validar Saída</span>
+                </button>
+              </div>
+              <p id="pin-feedback" class="text-xs font-semibold hidden"></p>
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl border border-amber-200/80 shadow-sm space-y-3">
+            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <i data-lucide="history" class="w-4 h-4 text-slate-500"></i>
+              <span>Histórico de Saídas na Portaria</span>
+            </h3>
+            <div id="portaria-historico-list" class="divide-y divide-slate-100"></div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: GUIA DE INSTALAÇÃO VIA CHROME (ANDROID) E SAFARI (IOS) -->
+  <!-- ============================================================== -->
+  <div id="modal-install-guide" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 border-2 border-emerald-400">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <img src="assets/logo.jpg" class="w-8 h-8 rounded-lg object-cover">
+          <div>
+            <h3 class="font-bold text-slate-900 text-sm">Instalar Sintonia Kids</h3>
+            <p class="text-[11px] text-slate-500">Adicione o ícone na tela do seu celular</p>
+          </div>
+        </div>
+        <button onclick="closeInstallModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- BOTÃO NATIVO AUTOMÁTICO SE SUPORTADO -->
+      <div id="native-install-section" class="hidden">
+        <button onclick="triggerNativeInstall()" class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Instalar Agora no Celular (1 Clique)</span>
+        </button>
+        <p class="text-[11px] text-slate-400 text-center mt-1.5">Ou siga as instruções abaixo conforme o seu celular:</p>
+      </div>
+
+      <!-- ABAS DE NAVEGADOR: IPHONE (SAFARI) vs ANDROID (CHROME) -->
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+          <button onclick="switchInstallTab('ios')" id="tab-btn-ios" class="py-2 px-3 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-800 transition">
+            📱 iPhone (Safari)
+          </button>
+          <button onclick="switchInstallTab('android')" id="tab-btn-android" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition">
+            🤖 Android (Chrome)
+          </button>
+        </div>
+
+        <!-- PASSO A PASSO IPHONE (SAFARI) -->
+        <div id="install-step-ios" class="space-y-2.5 text-xs text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <div class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
+            <p>No <strong>Safari</strong> do iPhone, toque no ícone de <strong>Compartilhar</strong> <span class="px-1.5 py-0.5 rounded bg-slate-200 font-bold">⎋</span> na barra inferior.</p>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
+            <p>Role para cima e toque em <strong>"Adicionar à Tela de Início"</strong> <span class="px-1.5 py-0.5 rounded bg-slate-200 font-bold">➕</span>.</p>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
+            <p>Toque em <strong>"Adicionar"</strong> no canto superior direito. Pronto! O app estará na sua tela.</p>
+          </div>
+        </div>
+
+        <!-- PASSO A PASSO ANDROID (CHROME) -->
+        <div id="install-step-android" class="space-y-2.5 text-xs text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 hidden">
+          <div class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
+            <p>No <strong>Chrome</strong> do Android, toque nos <strong>3 pontinhos</strong> <span class="px-1.5 py-0.5 rounded bg-slate-200 font-bold">⋮</span> no topo direito.</p>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
+            <p>Toque na opção <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</p>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
+            <p>Confirme em <strong>"Instalar"</strong>. O ícone do Sintonia Kids será adicionado no seu celular!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="closeInstallModal()" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+          Entendi, fechar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: LANÇAMENTO EM LOTE -->
+  <div id="modal-lote" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center"><i data-lucide="zap" class="w-4 h-4"></i></div>
+          <h3 class="font-bold text-slate-900 text-sm">Lançamento em Lote (< 15s)</h3>
+        </div>
+        <button onclick="closeModalLote()" class="text-slate-400 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="space-y-3 text-xs font-bold text-slate-700">
+        <div>
+          <label class="block mb-1">🍽️ Alimentação:</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="setLoteVal('alimentacao', 'Comeu tudo')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Comeu tudo</button>
+            <button type="button" onclick="setLoteVal('alimentacao', 'Metade')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Metade</button>
+            <button type="button" onclick="setLoteVal('alimentacao', 'Recusou')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Recusou</button>
+          </div>
+        </div>
+        <div>
+          <label class="block mb-1">💧 Água:</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="setLoteVal('hidratacao', 'Excelente')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Excelente</button>
+            <button type="button" onclick="setLoteVal('hidratacao', 'Regular')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Regular</button>
+            <button type="button" onclick="setLoteVal('hidratacao', 'Pouca')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Pouca</button>
+          </div>
+        </div>
+        <div>
+          <label class="block mb-1">💤 Soneca:</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="setLoteVal('sono', 'Dormiu bem')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Dormiu bem</button>
+            <button type="button" onclick="setLoteVal('sono', 'Agitado')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Agitado</button>
+            <button type="button" onclick="setLoteVal('sono', 'Não dormiu')" class="py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50">Não dormiu</button>
+          </div>
+        </div>
+      </div>
+      <div class="pt-2 flex gap-2">
+        <button onclick="closeModalLote()" class="flex-1 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs">Cancelar</button>
+        <button onclick="salvarLote()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700">Aplicar na Turma</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRESCREVER MEDICAÇÃO -->
+  <div id="modal-medicacao" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center"><i data-lucide="pill" class="w-4 h-4"></i></div>
+          <h3 class="font-bold text-slate-900 text-sm">Prescrever Remédio do Dia</h3>
+        </div>
+        <button onclick="closeModalMedicacao()" class="text-slate-400 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="space-y-3 text-xs font-semibold text-slate-700">
+        <div>
+          <label class="block mb-1">Nome do Medicamento:</label>
+          <input type="text" id="input-med-nome" placeholder="Ex: Dipirona Gotas" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs">
+        </div>
+        <div>
+          <label class="block mb-1">Dosagem:</label>
+          <input type="text" id="input-med-dose" placeholder="Ex: 10 gotas" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs">
+        </div>
+        <div>
+          <label class="block mb-1">Horário Previsto:</label>
+          <input type="time" id="input-med-hora" value="14:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs">
+        </div>
+      </div>
+      <div class="pt-2 flex gap-2">
+        <button onclick="closeModalMedicacao()" class="flex-1 py-2 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs">Cancelar</button>
+        <button onclick="salvarNovaMedicacao()" class="flex-1 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700">Enviar para a Professora</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-200 pointer-events-none">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-msg">Sucesso</span>
+  </div>
+
+  <!-- SCRIPT DE EXECUÇÃO -->
+  <script>
+    // Registro do Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration note:', err));
+    }
+
+    // Suporte ao Prompt Nativo do Chrome
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const nativeSec = document.getElementById('native-install-section');
+      if (nativeSec) nativeSec.classList.remove('hidden');
+    });
+
+    window.triggerNativeInstall = async function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          showToast("Obrigado por instalar a Agenda Sintonia Kids!");
+          closeInstallModal();
+        }
+        deferredPrompt = null;
+      }
+    };
+
+    window.openInstallModal = function() {
+      document.getElementById('modal-install-guide').classList.remove('hidden');
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    window.closeInstallModal = function() {
+      document.getElementById('modal-install-guide').classList.add('hidden');
+    };
+
+    window.switchInstallTab = function(platform) {
+      const btnIos = document.getElementById('tab-btn-ios');
+      const btnAnd = document.getElementById('tab-btn-android');
+      const stepIos = document.getElementById('install-step-ios');
+      const stepAnd = document.getElementById('install-step-android');
+
+      if (platform === 'ios') {
+        btnIos.className = "py-2 px-3 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-800 transition";
+        btnAnd.className = "py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition";
+        stepIos.classList.remove('hidden');
+        stepAnd.classList.add('hidden');
+      } else {
+        btnAnd.className = "py-2 px-3 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-800 transition";
+        btnIos.className = "py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition";
+        stepAnd.classList.remove('hidden');
+        stepIos.classList.add('hidden');
+      }
+    };
+
+    // SUPABASE CONFIG
+    const SUPABASE_URL = "https://peoktcrdhcnbrxyaxjqz.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_YpZ-xFLlnNkOvRka-rarYQ_Xp8c0zvl";
+
+    let supabaseClient = null;
+    try {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch(e) {
+      console.warn("Supabase init:", e);
+    }
+
+    // USUÁRIOS DE DEMONSTRAÇÃO DO SISTEMA MULTI-TENANT
+    const USERS_MAP = {
+      'tania': { username: 'tania', nome: 'Dra. Helena Vasconcelos (Diretoria)', perfil: 'DIRETORIA', label: 'Diretoria Geral' },
+      'diretoria01': { username: 'tania', nome: 'Dra. Helena Vasconcelos (Diretoria)', perfil: 'DIRETORIA', label: 'Diretoria Geral' },
+      'diretoria1': { username: 'tania', nome: 'Dra. Helena Vasconcelos (Diretoria)', perfil: 'DIRETORIA', label: 'Diretoria Geral' },
+      'patricia': { username: 'patricia', nome: 'Profª Patrícia Duarte (Coordenação)', perfil: 'DIRETORIA', label: 'Coordenação Pedagógica' },
+      'diretoria02': { username: 'patricia', nome: 'Profª Patrícia Duarte (Coordenação)', perfil: 'DIRETORIA', label: 'Coordenação Pedagógica' },
+      'diretoria2': { username: 'patricia', nome: 'Profª Patrícia Duarte (Coordenação)', perfil: 'DIRETORIA', label: 'Coordenação Pedagógica' },
+      'prof1': { username: 'prof1', nome: 'Profª Juliana Mendes', perfil: 'PROFESSOR', label: 'Professora (Berçário)', turma_padrao: 'b1000000-0000-0000-0000-000000000001' },
+      'prof2': { username: 'prof2', nome: 'Profª Camila Santos', perfil: 'PROFESSOR', label: 'Professora (Maternal)', turma_padrao: 'b2000000-0000-0000-0000-000000000002' },
+      'profax1': { username: 'profax1', nome: 'Monitª Beatriz Lima', perfil: 'AUXILIAR', label: 'Auxiliar (Berçário)', turma_padrao: 'b1000000-0000-0000-0000-000000000001' },
+      'profax2': { username: 'profax2', nome: 'Monitª Fernanda Silva', perfil: 'AUXILIAR', label: 'Auxiliar (Maternal)', turma_padrao: 'b2000000-0000-0000-0000-000000000002' },
+      'mae1': { username: 'mae1', nome: 'Mariana Rocha (Mãe)', perfil: 'FAMILIA', label: 'Família Rocha', filhos_ids: ['a1000000-0000-0000-0000-000000000001', 'a3000000-0000-0000-0000-000000000003'] },
+      'pai1': { username: 'pai1', nome: 'Carlos Rocha (Pai)', perfil: 'FAMILIA', label: 'Família Rocha', filhos_ids: ['a1000000-0000-0000-0000-000000000001', 'a3000000-0000-0000-0000-000000000003'] },
+      'mae2': { username: 'mae2', nome: 'Camila Ramos (Mãe)', perfil: 'FAMILIA', label: 'Família Ramos', filhos_ids: ['a2000000-0000-0000-0000-000000000002'] },
+      'pai2': { username: 'pai2', nome: 'Lucas Ferreira (Pai)', perfil: 'FAMILIA', label: 'Família Ferreira', filhos_ids: ['a4000000-0000-0000-0000-000000000004'] },
+      'portaria01': { username: 'portaria01', nome: 'Seu José (Portaria)', perfil: 'PORTARIA', label: 'Portaria Segura' }
+    };
+
+    let currentUser = null;
+    let selectedTurma = 'b1000000-0000-0000-0000-000000000001';
+    let currentChildId = 'a1000000-0000-0000-0000-000000000001';
+
+    let alunosData = [
+      {
+        id: 'a1000000-0000-0000-0000-000000000001',
+        turma_id: 'b1000000-0000-0000-0000-000000000001',
+        nome_completo: 'Alice Rocha',
+        foto_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=150&auto=format&fit=crop&q=80',
+        alergias_restricoes: 'Alérgica severa a Amendoim e derivados',
+        responsavel_nome: 'Mariana Rocha (mae1)',
+        turmas: { nome: 'Berçário I (Estrelinhas)' }
+      },
+      {
+        id: 'a2000000-0000-0000-0000-000000000002',
+        turma_id: 'b1000000-0000-0000-0000-000000000001',
+        nome_completo: 'Theo Souza',
+        foto_url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=150&auto=format&fit=crop&q=80',
+        alergias_restricoes: null,
+        responsavel_nome: 'Camila Ramos (mae2)',
+        turmas: { nome: 'Berçário I (Estrelinhas)' }
+      },
+      {
+        id: 'a3000000-0000-0000-0000-000000000003',
+        turma_id: 'b2000000-0000-0000-0000-000000000002',
+        nome_completo: 'Helena Duarte',
+        foto_url: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=150&auto=format&fit=crop&q=80',
+        alergias_restricoes: 'Intolerância à Lactose (leite especial)',
+        responsavel_nome: 'Mariana Rocha (mae1)',
+        turmas: { nome: 'Maternal II (Arco-Íris)' }
+      },
+      {
+        id: 'a4000000-0000-0000-0000-000000000004',
+        turma_id: 'b2000000-0000-0000-0000-000000000002',
+        nome_completo: 'Gael Ferreira',
+        foto_url: 'https://images.unsplash.com/photo-1595454223600-91fb55979c32?w=150&auto=format&fit=crop&q=80',
+        alergias_restricoes: null,
+        responsavel_nome: 'Lucas Ferreira (pai2)',
+        turmas: { nome: 'Maternal II (Arco-Íris)' }
+      }
+    ];
+
+    let diariosData = {
+      'a1000000-0000-0000-0000-000000000001': {
+        alimentacao: 'Comeu tudo',
+        hidratacao: 'Excelente',
+        higiene_fraldas: '3 trocas normais',
+        sono: 'Dormiu bem',
+        observacoes: 'Alice participou ativamente da rodinha de histórias e brincou com blocos coloridos.'
+      },
+      'a3000000-0000-0000-0000-000000000003': {
+        alimentacao: 'Comeu tudo (leite sem lactose)',
+        hidratacao: 'Excelente',
+        higiene_fraldas: 'Fralda seca na rotina',
+        sono: 'Dormiu 1h15 tranquila',
+        observacoes: 'Helena adorou a atividade de pintura com tinta guache atóxica!'
+      }
+    };
+
+    let estoqueData = {
+      'a1000000-0000-0000-0000-000000000001': { saldo_atual: 3 },
+      'a2000000-0000-0000-0000-000000000002': { saldo_atual: 14 },
+      'a3000000-0000-0000-0000-000000000003': { saldo_atual: 8 },
+      'a4000000-0000-0000-0000-000000000004': { saldo_atual: 10 }
+    };
+
+    let medicacoesData = {
+      'a3000000-0000-0000-0000-000000000003': {
+        medicamento: 'Amoxicilina Suspensão Oral',
+        dosagem: '5 ml',
+        horario_previsto: '14:00',
+        administrado_em: null
+      }
+    };
+
+    let portariaLogs = [
+      { aluno: 'Theo Souza', retirado_por: 'Camila Ramos (mae2)', pin: '5120', hora: '11:45' }
+    ];
+
+    // INICIALIZAÇÃO
+    function init() {
+      if (window.lucide) window.lucide.createIcons();
+
+      const saved = localStorage.getItem('sintonia_user');
+      if (saved) {
+        try {
+          currentUser = JSON.parse(saved);
+          renderAppScreen();
+        } catch(e) {
+          showLoginScreen();
+        }
+      } else {
+        showLoginScreen();
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+
+    window.loginWithUsername = function(username) {
+      const u = USERS_MAP[username];
+      if (u) {
+        currentUser = u;
+        if (u.turma_padrao) selectedTurma = u.turma_padrao;
+        localStorage.setItem('sintonia_user', JSON.stringify(currentUser));
+        showToast(`Bem-vindo(a) ao Sintonia Kids, ${u.nome}!`);
+        renderAppScreen();
+      }
+    };
+
+    window.handleFormLogin = function(e) {
+      e.preventDefault();
+      const rawUser = document.getElementById('login-usuario').value.trim().toLowerCase();
+      
+      let matchedKey = 'tania';
+      if (USERS_MAP[rawUser]) matchedKey = rawUser;
+      else if (rawUser.includes('tan')) matchedKey = 'tania';
+      else if (rawUser.includes('pat')) matchedKey = 'patricia';
+      else if (rawUser.includes('dir')) matchedKey = rawUser.includes('2') ? 'patricia' : 'tania';
+      else if (rawUser.includes('profax') || rawUser.includes('aux')) matchedKey = rawUser.includes('2') ? 'profax2' : 'profax1';
+      else if (rawUser.includes('prof')) matchedKey = rawUser.includes('2') ? 'prof2' : 'prof1';
+      else if (rawUser.includes('mae') || rawUser.includes('pai')) matchedKey = (rawUser.includes('2')) ? (rawUser.includes('pai') ? 'pai2' : 'mae2') : (rawUser.includes('pai') ? 'pai1' : 'mae1');
+      else if (rawUser.includes('port')) matchedKey = 'portaria01';
+
+      loginWithUsername(matchedKey);
+    };
+
+    window.logout = function() {
+      localStorage.removeItem('sintonia_user');
+      currentUser = null;
+      showLoginScreen();
+      showToast("Agenda fechada com sucesso!");
+    };
+
+    function showLoginScreen() {
+      document.getElementById('screen-login').classList.remove('hidden');
+      document.getElementById('screen-app').classList.add('hidden');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderAppScreen() {
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-app').classList.remove('hidden');
+
+      document.getElementById('header-user-welcome').innerText = `${currentUser.nome} (@${currentUser.username})`;
+
+      ['diretoria', 'professor', 'auxiliar', 'familia', 'portaria'].forEach(p => {
+        const el = document.getElementById(`role-view-${p}`);
+        if (el) el.classList.add('hidden');
+      });
+
+      const roleKey = currentUser.perfil.toLowerCase();
+      const targetView = document.getElementById(`role-view-${roleKey}`);
+      if (targetView) targetView.classList.remove('hidden');
+
+      if (roleKey === 'professor') {
+        const sel = document.getElementById('select-turma-prof');
+        if (sel && currentUser.turma_padrao) sel.value = currentUser.turma_padrao;
+        renderProfessoraList('alunos-list-prof', false);
+      } else if (roleKey === 'auxiliar') {
+        renderProfessoraList('alunos-list-aux', true);
+      } else if (roleKey === 'familia') {
+        renderFamiliaView();
+      } else if (roleKey === 'portaria') {
+        loadPortariaView();
+      }
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // LISTA DE ALUNOS (PROFESSORA & AUXILIAR COM VISUAL DE AGENDA)
+    function renderProfessoraList(containerId, isAuxiliar) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = '';
+
+      const filtrados = selectedTurma === 'all' 
+        ? alunosData 
+        : alunosData.filter(a => a.turma_id === selectedTurma);
+
+      filtrados.forEach(aluno => {
+        const diario = diariosData[aluno.id] || {};
+        const insumo = estoqueData[aluno.id] || { saldo_atual: 10 };
+        const isBaixoEstoque = insumo.saldo_atual <= 5;
+
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-2xl border border-amber-200/90 shadow-sm space-y-3 relative";
+        card.innerHTML = `
+          ${aluno.alergias_restricoes ? `
+            <div class="badge-allergy bg-rose-50 border border-rose-300 text-rose-800 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+              <span>CUIDADO MÉDICO: ${aluno.alergias_restricoes}</span>
+            </div>
+          ` : ''}
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <img src="${aluno.foto_url}" alt="${aluno.nome_completo}" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-emerald-300 shadow-sm">
+              <div>
+                <h3 class="font-bold text-slate-900 text-base leading-tight">${aluno.nome_completo}</h3>
+                <p class="text-xs text-slate-500 font-medium">${aluno.turmas?.nome || 'Berçário'}</p>
+              </div>
+            </div>
+
+            <!-- CONTROLE DE FRALDAS -->
+            <div class="flex items-center gap-1.5 bg-amber-50/80 border border-amber-200 rounded-xl px-2.5 py-1.5">
+              <i data-lucide="package" class="w-4 h-4 text-slate-500"></i>
+              <span class="text-xs font-bold ${isBaixoEstoque ? 'text-rose-600' : 'text-slate-700'}">
+                ${insumo.saldo_atual} fraldas
+              </span>
+              <button onclick="alterarEstoque('${aluno.id}', 1)" title="Adicionar fralda" class="w-6 h-6 rounded-lg bg-white border border-amber-200 flex items-center justify-center text-slate-700 hover:bg-amber-100 text-xs font-bold">+</button>
+            </div>
+          </div>
+
+          <!-- BOTÕES ONE-THUMB -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs font-semibold">
+            <div>
+              <label class="text-[11px] font-bold text-slate-500 block mb-1">🍽️ Alimentação</label>
+              <select onchange="updateDiarioField('${aluno.id}', 'alimentacao', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 font-medium text-slate-800 text-xs">
+                <option value="Comeu tudo" ${diario.alimentacao?.includes('tudo') ? 'selected' : ''}>Comeu tudo</option>
+                <option value="Metade" ${diario.alimentacao?.includes('Metade') ? 'selected' : ''}>Metade</option>
+                <option value="Pouco" ${diario.alimentacao?.includes('Pouco') ? 'selected' : ''}>Pouco</option>
+                <option value="Recusou" ${diario.alimentacao?.includes('Recusou') ? 'selected' : ''}>Recusou</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-[11px] font-bold text-slate-500 block mb-1">💧 Hidratação</label>
+              <select onchange="updateDiarioField('${aluno.id}', 'hidratacao', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 font-medium text-slate-800 text-xs">
+                <option value="Excelente" ${diario.hidratacao?.includes('Excelente') ? 'selected' : ''}>Excelente</option>
+                <option value="Regular" ${diario.hidratacao?.includes('Regular') ? 'selected' : ''}>Regular</option>
+                <option value="Pouca" ${diario.hidratacao?.includes('Pouca') ? 'selected' : ''}>Pouca</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-[11px] font-bold text-slate-500 block mb-1">🚼 Fralda / Higiene</label>
+              <button onclick="registrarTrocaFralda('${aluno.id}')" class="w-full touch-target bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl px-2 py-1.5 flex items-center justify-center gap-1 font-bold text-xs transition">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>Troca (-1 fralda)</span>
+              </button>
+            </div>
+
+            <div>
+              <label class="text-[11px] font-bold text-slate-500 block mb-1">💤 Sono</label>
+              <select onchange="updateDiarioField('${aluno.id}', 'sono', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 font-medium text-slate-800 text-xs">
+                <option value="Dormiu bem" ${diario.sono?.includes('bem') ? 'selected' : ''}>Dormiu bem</option>
+                <option value="Agitado" ${diario.sono?.includes('agitado') ? 'selected' : ''}>Agitado</option>
+                <option value="Não dormiu" ${diario.sono?.includes('Não') ? 'selected' : ''}>Não dormiu</option>
+              </select>
+            </div>
+          </div>
+
+          ${!isAuxiliar ? `
+            <div class="pt-1">
+              <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium mb-1">
+                <span>Anotação da Professora (Agenda Escolar):</span>
+                <span id="char-count-${aluno.id}">${(diario.observacoes || '').length} / 1800</span>
+              </div>
+              <textarea id="obs-${aluno.id}" oninput="updateCharCount('${aluno.id}')" rows="2" placeholder="Ex: Participou ativamente da aula hoje..." class="w-full bg-amber-50/40 border border-amber-200 rounded-xl p-2.5 text-xs text-slate-700">${diario.observacoes || ''}</textarea>
+              <div class="flex justify-end mt-1.5">
+                <button onclick="salvarObservacao('${aluno.id}')" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center gap-1.5 shadow transition">
+                  <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                  <span>Salvar na Agenda</span>
+                </button>
+              </div>
+            </div>
+          ` : `
+            <div class="p-2 bg-teal-50/70 rounded-xl border border-teal-200 flex items-center justify-between text-[11px] text-teal-800 font-medium">
+              <span>Cuidados rápidos registrados pela auxiliar com sucesso.</span>
+              <span class="font-bold">✓ Registrado</span>
+            </div>
+          `}
+        `;
+        container.appendChild(card);
+      });
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // VIEW DA FAMÍLIA (MULTI-FILHOS EM TURMAS DIFERENTES)
+    function renderFamiliaView() {
+      const filhosIds = currentUser?.filhos_ids || ['a1000000-0000-0000-0000-000000000001', 'a3000000-0000-0000-0000-000000000003'];
+      const meusFilhos = alunosData.filter(a => filhosIds.includes(a.id));
+
+      if (meusFilhos.length === 0) return;
+      if (!filhosIds.includes(currentChildId)) currentChildId = meusFilhos[0].id;
+
+      document.getElementById('familia-child-count-tag').innerText = `${meusFilhos.length} ${meusFilhos.length > 1 ? 'Filhos' : 'Filho'}`;
+
+      const tabsContainer = document.getElementById('familia-children-tabs');
+      tabsContainer.innerHTML = '';
+
+      meusFilhos.forEach(filho => {
+        const isSelected = filho.id === currentChildId;
+        const btn = document.createElement('button');
+        btn.onclick = () => { currentChildId = filho.id; renderFamiliaView(); };
+        btn.className = `flex-1 p-2.5 rounded-2xl border transition flex items-center gap-2.5 ${isSelected ? 'bg-emerald-50 border-emerald-500 ring-2 ring-emerald-400' : 'bg-white border-amber-200 hover:bg-amber-50'}`;
+        btn.innerHTML = `
+          <img src="${filho.foto_url}" class="w-10 h-10 rounded-xl object-cover ring-1 ring-slate-200">
+          <div class="text-left">
+            <h4 class="font-bold text-xs text-slate-900 leading-tight">${filho.nome_completo}</h4>
+            <p class="text-[10px] text-slate-500 font-semibold">${filho.turmas?.nome || 'Berçário'}</p>
+          </div>
+        `;
+        tabsContainer.appendChild(btn);
+      });
+
+      const alunoAtivo = meusFilhos.find(a => a.id === currentChildId) || meusFilhos[0];
+
+      // Alerta de Insumos da Criança
+      const insumo = estoqueData[alunoAtivo.id] || { saldo_atual: 10 };
+      const alertBox = document.getElementById('familia-insumos-alerta');
+      if (insumo.saldo_atual <= 5) {
+        alertBox.className = "p-4 rounded-2xl border-2 bg-amber-50 border-amber-300 text-amber-950 flex items-start gap-3 shadow-sm";
+        alertBox.innerHTML = `
+          <div class="p-2 bg-amber-200 text-amber-800 rounded-xl shrink-0"><i data-lucide="alert-circle" class="w-5 h-5"></i></div>
+          <div>
+            <h4 class="font-bold text-sm">Aviso de Mochila: Reposição de Fraldas</h4>
+            <p class="text-xs text-amber-900 mt-0.5">Restam apenas <strong>${insumo.saldo_atual} fraldas</strong> na mochilinha de ${alunoAtivo.nome_completo}. Favor mandar novo pacote amanhã!</p>
+          </div>
+        `;
+      } else {
+        alertBox.className = "p-4 rounded-2xl border-2 bg-emerald-50 border-emerald-200 text-emerald-900 flex items-start gap-3 shadow-sm";
+        alertBox.innerHTML = `
+          <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl shrink-0"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
+          <div>
+            <h4 class="font-bold text-sm">Mochila Abastecida</h4>
+            <p class="text-xs text-emerald-800 mt-0.5">Saldo de <strong>${insumo.saldo_atual} fraldas</strong> disponíveis para ${alunoAtivo.nome_completo}.</p>
+          </div>
+        `;
+      }
+
+      // Linha do Tempo Estilo Folha da Agenda
+      const diario = diariosData[alunoAtivo.id] || {};
+      const timeline = document.getElementById('familia-timeline');
+      timeline.innerHTML = `
+        <div class="p-3 bg-amber-50/50 border border-amber-200/80 rounded-xl flex items-center gap-2.5">
+          <span class="text-xl">🍽️</span>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400">Alimentação</span>
+            <p class="text-xs font-bold text-slate-800">${diario.alimentacao || 'Comeu tudo'}</p>
+          </div>
+        </div>
+        <div class="p-3 bg-amber-50/50 border border-amber-200/80 rounded-xl flex items-center gap-2.5">
+          <span class="text-xl">💧</span>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400">Hidratação</span>
+            <p class="text-xs font-bold text-slate-800">${diario.hidratacao || 'Excelente'}</p>
+          </div>
+        </div>
+        <div class="p-3 bg-amber-50/50 border border-amber-200/80 rounded-xl flex items-center gap-2.5">
+          <span class="text-xl">🚼</span>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400">Fraldinha / Higiene</span>
+            <p class="text-xs font-bold text-slate-800">${diario.higiene_fraldas || 'Troquinhas regulares'}</p>
+          </div>
+        </div>
+        <div class="p-3 bg-amber-50/50 border border-amber-200/80 rounded-xl flex items-center gap-2.5">
+          <span class="text-xl">💤</span>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400">Soneca da Tarde</span>
+            <p class="text-xs font-bold text-slate-800">${diario.sono || 'Dormiu bem'}</p>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('familia-obs').innerText = diario.observacoes || "Nenhuma anotação especial registrada hoje.";
+
+      // Carimbo de Ciência da Família
+      const btnCheck = document.getElementById('familia-btn-doublecheck');
+      if (diario.lido_responsavel_em) {
+        btnCheck.className = "stamp-certified flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-[#eb5e8d] cursor-default";
+        btnCheck.innerHTML = `<i data-lucide="check-check" class="w-3.5 h-3.5 text-[#eb5e8d]"></i><span>Visto pelos Pais</span>`;
+      } else {
+        btnCheck.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#74c043] text-white hover:bg-emerald-600 transition shadow-sm";
+        btnCheck.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i><span>Dar Ciência / Visto</span>`;
+      }
+
+      // Medicamento
+      const med = medicacoesData[alunoAtivo.id];
+      const medBox = document.getElementById('familia-medicacao-box');
+      if (med) {
+        medBox.innerHTML = `
+          <div class="p-3 rounded-xl border border-rose-200 bg-rose-50/60 flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-xs text-slate-800">${med.medicamento} (${med.dosagem})</h4>
+              <p class="text-[11px] text-slate-500 mt-0.5">Horário previsto: <strong>${med.horario_previsto}</strong></p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${med.administrado_em ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+              ${med.administrado_em ? 'Administrado' : 'Aguardando'}
+            </span>
+          </div>
+        `;
+      } else {
+        medBox.innerHTML = `<p class="text-xs text-slate-400 italic">Nenhum medicamento prescrito para hoje.</p>`;
+      }
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // AÇÕES
+    window.updateDiarioField = async function(alunoId, field, value) {
+      if (!diariosData[alunoId]) {
+        diariosData[alunoId] = {
+          escola_id: 'e1000000-0000-0000-0000-000000000001',
+          aluno_id: alunoId,
+          data_referencia: new Date().toISOString().split('T')[0]
+        };
+      }
+      diariosData[alunoId][field] = value;
+
+      if (supabaseClient) {
+        await supabaseClient.from('diarios_bordo').upsert([diariosData[alunoId]], { onConflict: 'escola_id,aluno_id,data_referencia' });
+      }
+      showToast(`${field} atualizado!`);
+    };
+
+    window.registrarTrocaFralda = async function(alunoId) {
+      if (!estoqueData[alunoId]) estoqueData[alunoId] = { saldo_atual: 10 };
+      if (estoqueData[alunoId].saldo_atual > 0) estoqueData[alunoId].saldo_atual -= 1;
+
+      if (supabaseClient) {
+        await supabaseClient
+          .from('estoque_insumos')
+          .upsert([{
+            escola_id: 'e1000000-0000-0000-0000-000000000001',
+            aluno_id: alunoId,
+            tipo_item: 'FRALDA',
+            saldo_atual: estoqueData[alunoId].saldo_atual
+          }], { onConflict: 'escola_id,aluno_id,tipo_item' });
+      }
+
+      if (currentUser?.perfil === 'PROFESSOR') renderProfessoraList('alunos-list-prof', false);
+      else if (currentUser?.perfil === 'AUXILIAR') renderProfessoraList('alunos-list-aux', true);
+      showToast(`Troca registrada! Saldo restante: ${estoqueData[alunoId].saldo_atual}`);
+    };
+
+    window.alterarEstoque = async function(alunoId, delta) {
+      if (!estoqueData[alunoId]) estoqueData[alunoId] = { saldo_atual: 10 };
+      estoqueData[alunoId].saldo_atual += delta;
+
+      if (supabaseClient) {
+        await supabaseClient
+          .from('estoque_insumos')
+          .upsert([{
+            escola_id: 'e1000000-0000-0000-0000-000000000001',
+            aluno_id: alunoId,
+            tipo_item: 'FRALDA',
+            saldo_atual: estoqueData[alunoId].saldo_atual
+          }], { onConflict: 'escola_id,aluno_id,tipo_item' });
+      }
+
+      if (currentUser?.perfil === 'PROFESSOR') renderProfessoraList('alunos-list-prof', false);
+      else if (currentUser?.perfil === 'AUXILIAR') renderProfessoraList('alunos-list-aux', true);
+      showToast(`Estoque atualizado: ${estoqueData[alunoId].saldo_atual}`);
+    };
+
+    window.salvarObservacao = async function(alunoId) {
+      const text = document.getElementById(`obs-${alunoId}`).value;
+      await updateDiarioField(alunoId, 'observacoes', text);
+      showToast("Diário registrado na folha de hoje!");
+    };
+
+    window.updateCharCount = function(alunoId) {
+      const len = document.getElementById(`obs-${alunoId}`).value.length;
+      document.getElementById(`char-count-${alunoId}`).innerText = `${len} / 1800`;
+    };
+
+    window.confirmarCienciaDiario = async function() {
+      if (!currentChildId) return;
+      const now = new Date().toISOString();
+      if (!diariosData[currentChildId]) {
+        diariosData[currentChildId] = {
+          escola_id: 'e1000000-0000-0000-0000-000000000001',
+          aluno_id: currentChildId,
+          data_referencia: now.split('T')[0]
+        };
+      }
+      diariosData[currentChildId].lido_responsavel_em = now;
+
+      if (supabaseClient) {
+        await supabaseClient.from('diarios_bordo').upsert([diariosData[currentChildId]], { onConflict: 'escola_id,aluno_id,data_referencia' });
+      }
+      renderFamiliaView();
+      showToast("Visto dos pais gravado na agenda!");
+    };
+
+    window.filterTurma = function(val) {
+      selectedTurma = val;
+      if (currentUser?.perfil === 'PROFESSOR') renderProfessoraList('alunos-list-prof', false);
+      else if (currentUser?.perfil === 'AUXILIAR') renderProfessoraList('alunos-list-aux', true);
+    };
+
+    // PORTARIA
+    window.validarSaidaPin = async function() {
+      const pin = document.getElementById('input-pin-portaria').value.trim();
+      const feedback = document.getElementById('pin-feedback');
+
+      if (pin === "8492" || pin.length === 4) {
+        feedback.className = "text-xs font-bold text-emerald-600 block";
+        feedback.innerText = "✓ PIN Válido! Liberação de saída autorizada para Alice Rocha (Tia Carla).";
+        
+        portariaLogs.unshift({
+          aluno: 'Alice Rocha',
+          retirado_por: 'Carla Rocha (Tia)',
+          pin: pin,
+          hora: new Date().toLocaleTimeString().slice(0, 5)
+        });
+
+        if (supabaseClient) {
+          await supabaseClient.from('registros_portaria').insert([{
+            escola_id: 'e1000000-0000-0000-0000-000000000001',
+            aluno_id: 'a1000000-0000-0000-0000-000000000001',
+            tipo_evento: 'SAIDA',
+            retirado_por_nome: 'Carla Rocha (Tia)',
+            pin_autorizacao: pin
+          }]);
+        }
+
+        showToast("Saída liberada! Notificação enviada à família.");
+        loadPortariaView();
+      } else {
+        feedback.className = "text-xs font-bold text-rose-600 block";
+        feedback.innerText = "✗ PIN não confere ou expirado.";
+      }
+    };
+
+    window.loadPortariaView = function() {
+      const list = document.getElementById('portaria-historico-list');
+      if (!list) return;
+      list.innerHTML = '';
+
+      portariaLogs.forEach(log => {
+        const item = document.createElement('div');
+        item.className = "py-2 flex items-center justify-between text-xs";
+        item.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <div>
+              <p class="font-bold text-slate-800">${log.aluno}</p>
+              <p class="text-[11px] text-slate-500">Autorizado: ${log.retirado_por} (PIN: ${log.pin})</p>
+            </div>
+          </div>
+          <span class="text-slate-400 font-mono text-[11px]">${log.hora}</span>
+        `;
+        list.appendChild(item);
+      });
+    };
+
+    window.gerarNovoPin = function() {
+      const novo = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('familia-pin-code').innerText = novo;
+      showToast(`Novo PIN gerado: ${novo}`);
+    };
+
+    window.dispararComunicado = function() {
+      const text = document.getElementById('input-comunicado-geral').value.trim();
+      if (!text) { alert('Digite o recadinho'); return; }
+      showToast("Comunicado disparado para todas as famílias!");
+      document.getElementById('input-comunicado-geral').value = '';
+    };
+
+    // MODAL LOTE
+    let loteState = { alimentacao: 'Comeu tudo', hidratacao: 'Excelente', sono: 'Dormiu bem' };
+    window.openModalLote = () => document.getElementById('modal-lote').classList.remove('hidden');
+    window.closeModalLote = () => document.getElementById('modal-lote').classList.add('hidden');
+    window.setLoteVal = (f, v) => { loteState[f] = v; showToast(`Selecionado: ${v}`); };
+    window.salvarLote = () => {
+      const filtrados = selectedTurma === 'all' ? alunosData : alunosData.filter(a => a.turma_id === selectedTurma);
+      filtrados.forEach(a => {
+        if (!diariosData[a.id]) diariosData[a.id] = { escola_id: 'e1000000-0000-0000-0000-000000000001', aluno_id: a.id, data_referencia: new Date().toISOString().split('T')[0] };
+        diariosData[a.id].alimentacao = loteState.alimentacao;
+        diariosData[a.id].hidratacao = loteState.hidratacao;
+        diariosData[a.id].sono = loteState.sono;
+      });
+      closeModalLote();
+      if (currentUser?.perfil === 'PROFESSOR') renderProfessoraList('alunos-list-prof', false);
+      else if (currentUser?.perfil === 'AUXILIAR') renderProfessoraList('alunos-list-aux', true);
+      showToast("Lote aplicado na turma!");
+    };
+
+    // MODAL MEDICAÇÃO
+    window.openModalMedicao = () => document.getElementById('modal-medicacao').classList.remove('hidden');
+    window.closeModalMedicao = () => document.getElementById('modal-medicacao').classList.add('hidden');
+    window.salvarNovaMedicacao = () => {
+      const nome = document.getElementById('input-med-nome').value.trim();
+      const dose = document.getElementById('input-med-dose').value.trim();
+      const hora = document.getElementById('input-med-hora').value;
+      if (!nome) return;
+
+      medicacoesData[currentChildId] = {
+        medicamento: nome,
+        dosagem: dose || 'Dose padrão',
+        horario_previsto: hora || '14:00',
+        administrado_em: null
+      };
+
+      closeModalMedicao();
+      renderFamiliaView();
+      showToast("Receita adicionada para a professora!");
+    };
+
+    // TOAST
+    window.showToast = function(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      document.getElementById('toast-msg').innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+    };
+  </script>
+</body>
+</html>

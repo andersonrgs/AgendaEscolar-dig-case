@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintonia Kids — Showcase Arquitetural & Demonstração do MVP</title>
+  
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              petroleo: '#1E6F9F',
+              petroleoDark: '#144e70',
+              petroleoLight: '#e0f2fe',
+              menta: '#10B981',
+              mentaDark: '#059669',
+              mentaLight: '#d1fae5',
+              coral: '#F59E0B',
+              coralDark: '#d97706',
+              bgLight: '#F8FAFC'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            hand: ['"Caveat"', 'cursive']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .touch-target {
+      min-height: 48px;
+    }
+    /* Estilo para simular tela de celular em visualizador desktop */
+    .mobile-frame {
+      width: 100%;
+      max-width: 412px;
+      margin: 0 auto;
+      min-height: 844px;
+      background: #F8FAFC;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 10px #1e293b;
+      position: relative;
+    }
+    .desktop-frame {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #F8FAFC;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.15);
+      border: 1px solid #e2e8f0;
+    }
+    /* Quando em modo captura (print), remove bordas simuladas para screenshot limpo */
+    body.capture-mode .mobile-frame {
+      max-width: 100% !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      min-height: 100vh;
+    }
+    body.capture-mode .desktop-frame {
+      max-width: 100% !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+    body.capture-mode #showcase-nav-bar {
+      display: none !important;
+    }
+  </style>
+</head>
+<body class="p-0 sm:p-4 md:p-6 min-h-screen flex flex-col items-center">
+
+  <!-- BARRA DE NAVEGAÇÃO SUPERIOR DO SHOWCASE (PARA DIRETORAS TÂNIA E PATRÍCIA) -->
+  <header id="showcase-nav-bar" class="w-full max-w-5xl mb-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-slate-200 sticky top-2 z-50 transition">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <!-- LOGO E IDENTIFICAÇÃO ARQUITETURAL -->
+      <div class="flex items-center gap-3">
+        <img src="assets/logo.jpg" alt="Sintonia Kids" class="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500 shadow-sm">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-base font-extrabold text-[#1E6F9F] tracking-tight">Sintonia Kids</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">Showcase de Arquitetura</span>
+          </div>
+          <p class="text-xs font-semibold text-slate-500">
+            Escola Modelo Horizonte • <span class="text-slate-700">demo.sintoniakids.com.br</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- BOTÕES SELETORES DAS 5 TELAS DO MVP -->
+      <div class="flex items-center flex-wrap gap-1.5 justify-center">
+        <button onclick="setScreen('tela1')" id="nav-tela1" class="screen-nav-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#1E6F9F] text-white shadow-xs">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          <span>1. Login & LGPD</span>
+        </button>
+
+        <button onclick="setScreen('tela2')" id="nav-tela2" class="screen-nav-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <i data-lucide="clipboard-edit" class="w-3.5 h-3.5"></i>
+          <span>2. Diário Professora</span>
+        </button>
+
+        <button onclick="setScreen('tela3')" id="nav-tela3" class="screen-nav-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <i data-lucide="heart" class="w-3.5 h-3.5"></i>
+          <span>3. Visão dos Pais</span>
+        </button>
+
+        <button onclick="setScreen('tela4')" id="nav-tela4" class="screen-nav-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <i data-lucide="pill" class="w-3.5 h-3.5"></i>
+          <span>4. Informes & Medicamentos</span>
+        </button>
+
+        <button onclick="setScreen('tela5')" id="nav-tela5" class="screen-nav-btn px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+          <span>5. Portaria Segura</span>
+        </button>
+      </div>
+
+      <!-- FORMATO DA VISTA: MOBILE VS DESKTOP -->
+      <div class="flex items-center gap-2 border-l border-slate-200 pl-3">
+        <button onclick="toggleViewMode('mobile')" id="btn-view-mobile" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-white flex items-center gap-1" title="Formato Smartphone (iPhone 14/15)">
+          <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Mobile</span>
+        </button>
+        <button onclick="toggleViewMode('desktop')" id="btn-view-desktop" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1" title="Formato Tablet / Desktop">
+          <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Desktop</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- CONTAINER PRINCIPAL DO DISPOSITIVO -->
+  <main id="app-viewport-container" class="mobile-frame flex flex-col">
+
+    <!-- ========================================================================= -->
+    <!-- TELA 01: LOGIN & ACEITE DIGITAL LGPD (Art. 14)                            -->
+    <!-- ========================================================================= -->
+    <section id="screen-tela1" class="screen-content flex-1 flex flex-col justify-between bg-gradient-to-b from-sky-50/70 via-white to-slate-50 p-5">
+      
+      <!-- TOPO / STATUS BAR SIMULADA -->
+      <div class="w-full flex items-center justify-between text-xs text-slate-400 mb-4 px-2">
+        <span class="font-bold text-slate-600">09:41</span>
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="wifi" class="w-3.5 h-3.5 text-slate-600"></i>
+          <i data-lucide="battery-charging" class="w-3.5 h-3.5 text-emerald-600"></i>
+        </div>
+      </div>
+
+      <!-- LOGO E IDENTIDADE -->
+      <div class="text-center space-y-2 mt-2">
+        <div class="relative inline-block">
+          <img src="assets/logo.jpg" alt="Sintonia Kids" class="w-24 h-24 mx-auto rounded-3xl object-cover shadow-lg ring-4 ring-white border-2 border-emerald-400">
+          <span class="absolute -bottom-2 -right-1 px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider shadow">Online</span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-black text-[#1E6F9F] tracking-tight">Sintonia Kids</h1>
+          <p class="text-xs font-bold text-slate-600">Escola Modelo Horizonte</p>
+          <p class="text-[11px] font-medium text-slate-400">Berçário, Maternal e Pré-Escola • Sistema Integrado</p>
+        </div>
+      </div>
+
+      <!-- SELETOR DE PERFIL RÁPIDO (ONE-THUMB) -->
+      <div class="bg-slate-100 p-1.5 rounded-2xl grid grid-cols-3 gap-1 my-4">
+        <button type="button" class="py-2 rounded-xl text-xs font-bold bg-white text-[#1E6F9F] shadow-sm flex flex-col items-center gap-0.5">
+          <i data-lucide="heart" class="w-4 h-4 text-rose-500"></i>
+          <span>Família</span>
+        </button>
+        <button type="button" class="py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-white/60 flex flex-col items-center gap-0.5">
+          <i data-lucide="graduation-cap" class="w-4 h-4 text-[#1E6F9F]"></i>
+          <span>Professora</span>
+        </button>
+        <button type="button" class="py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-white/60 flex flex-col items-center gap-0.5">
+          <i data-lucide="crown" class="w-4 h-4 text-amber-500"></i>
+          <span>Coordenação</span>
+        </button>
+      </div>
+
+      <!-- FORMULÁRIO DE ACESSO -->
+      <div class="space-y-3 bg-white p-4 rounded-2xl shadow-xs border border-slate-200">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">E-mail ou Telefone dos Pais:</label>
+          <div class="relative">
+            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+            <input type="text" readonly value="pais@familiaexemplo.com.br" class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Senha de Acesso:</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+            <input type="password" readonly value="••••••••••••" class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL DE ACEITE DIGITAL LGPD (Art. 14) -->
+      <div class="mt-4 bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-3.5 shadow-sm space-y-2.5">
+        <div class="flex items-center gap-2 text-emerald-900 font-extrabold text-xs">
+          <span class="p-1 rounded-lg bg-emerald-200 text-emerald-800">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          </span>
+          <span class="uppercase tracking-wide text-[11px]">Conformidade LGPD (Art. 14 — Proteção de Crianças)</span>
+        </div>
+        <p class="text-[11px] text-emerald-900/80 leading-relaxed">
+          Os dados de saúde, alimentação, imagens pedagógicas e retiradas na portaria de <strong>Lucas Silva</strong> são tratados de forma confidencial e criptografada pela <strong>Escola Modelo Horizonte</strong>, estritamente para segurança e bem-estar do menor.
+        </p>
+        <div class="flex items-center gap-2 pt-1 border-t border-emerald-200">
+          <input type="checkbox" checked id="check-lgpd" class="w-4 h-4 text-emerald-600 rounded border-emerald-400 focus:ring-emerald-500">
+          <label for="check-lgpd" class="text-[11px] font-bold text-emerald-950">
+            Concordo com o tratamento seguro dos dados conforme a Lei 13.709/2018.
+          </label>
+        </div>
+        <button class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-extrabold text-xs shadow-md shadow-emerald-700/20 active:scale-95 transition flex items-center justify-center gap-1.5">
+          <span>Li e Concordo • Acessar Agenda</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- RODAPÉ DA TELA -->
+      <div class="text-center pt-3">
+        <p class="text-[10px] text-slate-400">
+          Sintonia Kids v2.4 • Ambiente Seguro SSL 256-bit
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TELA 02: PAINEL DA PROFESSORA - DIÁRIO RÁPIDO EM LOTE                     -->
+    <!-- ========================================================================= -->
+    <section id="screen-tela2" class="screen-content flex-1 flex flex-col bg-slate-50 hidden">
+      
+      <!-- CABEÇALHO DO PAINEL PROFESSORA -->
+      <header class="bg-[#1E6F9F] text-white p-4 sticky top-0 z-30 shadow-md">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center font-bold text-sm border border-white/20">
+              TB
+            </div>
+            <div>
+              <p class="text-[10px] font-semibold text-sky-200 uppercase tracking-wider">Professora Responsável</p>
+              <h2 class="text-sm font-extrabold leading-tight">Tia Beatriz</h2>
+            </div>
+          </div>
+          <!-- BADGE DE SINCRONIZAÇÃO / OFFLINE -->
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-200 text-[10px] font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Sincronizado • Offline Ativo</span>
+          </div>
+        </div>
+
+        <!-- SELETOR DE TURMA & DATA -->
+        <div class="flex items-center justify-between text-xs bg-black/15 p-2 rounded-xl mt-1 border border-white/10">
+          <div class="flex items-center gap-1.5 font-bold">
+            <i data-lucide="users" class="w-4 h-4 text-sky-300"></i>
+            <span>Maternal I — Turno Tarde</span>
+          </div>
+          <span class="text-[11px] font-medium text-sky-200">Hoje (16 de Nov)</span>
+        </div>
+      </header>
+
+      <!-- BOTÃO DE AÇÃO EM LOTE SUPERIOR -->
+      <div class="p-3 bg-white border-b border-slate-200 shadow-xs flex items-center justify-between">
+        <div>
+          <p class="text-xs font-black text-slate-800">Lançamento Rápido em Lote</p>
+          <p class="text-[10px] text-slate-500">Agilidade no dia a dia da sala</p>
+        </div>
+        <button class="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-xs shadow-md shadow-amber-500/20 flex items-center gap-1.5 transition active:scale-95">
+          <i data-lucide="zap" class="w-3.5 h-3.5 fill-current"></i>
+          <span>Aplicar Padrão na Turma Toda</span>
+        </button>
+      </div>
+
+      <!-- LISTA DE ALUNOS PARA LANÇAMENTO -->
+      <div class="p-3 space-y-3 overflow-y-auto flex-1">
+        
+        <!-- CARD ALUNO 1: LUCAS SILVA -->
+        <div class="bg-white rounded-2xl p-3.5 border-2 border-[#1E6F9F]/30 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=100&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-xl object-cover ring-2 ring-sky-300">
+              <div>
+                <h3 class="font-extrabold text-slate-900 text-sm">Lucas Silva</h3>
+                <p class="text-[10px] font-semibold text-slate-500">3 anos • Sem restrições</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">Completo</span>
+          </div>
+
+          <!-- BOTÕES TÁTEIS GRANDES: ALIMENTAÇÃO -->
+          <div>
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Almoço / Lanche:</span>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button class="py-1.5 px-2 rounded-lg bg-emerald-600 text-white font-black text-xs flex items-center justify-center gap-1 shadow-xs">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i> Comeu tudo
+              </button>
+              <button class="py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200">
+                Metade
+              </button>
+              <button class="py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200">
+                Recusou
+              </button>
+            </div>
+          </div>
+
+          <!-- INDICADORES RÁPIDOS: ÁGUA, SONO E FRALDA -->
+          <div class="grid grid-cols-3 gap-1.5 text-center text-xs">
+            <div class="p-2 rounded-xl bg-sky-50 border border-sky-200">
+              <p class="text-[9px] font-bold text-sky-700 uppercase">Hidratação</p>
+              <p class="font-black text-sky-900">800 ml 💧</p>
+            </div>
+            <div class="p-2 rounded-xl bg-indigo-50 border border-indigo-200">
+              <p class="text-[9px] font-bold text-indigo-700 uppercase">Soninho</p>
+              <p class="font-black text-indigo-900">1h30 min 😴</p>
+            </div>
+            <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200">
+              <p class="text-[9px] font-bold text-emerald-700 uppercase">Fraldas</p>
+              <p class="font-black text-emerald-900">2x Xixi | 1x C</p>
+            </div>
+          </div>
+
+          <!-- OBSERVAÇÃO INDIVIDUAL (ATÉ 20 LINHAS) -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Recado do Dia para a Família:</label>
+            <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 text-xs font-semibold text-slate-800 font-sans">
+              "Lucas participou super bem da roda de música hoje, cantou e dançou com os colegas! Comeu todo o lanchinho com bastante apetite."
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD ALUNO 2: THEO SILVA (COM ALERTA DE INSUMOS) -->
+        <div class="bg-white rounded-2xl p-3.5 border-2 border-amber-300 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?w=100&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-xl object-cover ring-2 ring-amber-300">
+              <div>
+                <h3 class="font-extrabold text-slate-900 text-sm">Theo Silva</h3>
+                <p class="text-[10px] font-semibold text-slate-500">3 anos • Maternal I</p>
+              </div>
+            </div>
+            <!-- BADGE DESTACADO REQUISITADO -->
+            <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1 shadow-xs">
+              <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-600"></i>
+              <span>Restam 4 fraldas na mochila</span>
+            </span>
+          </div>
+
+          <!-- BOTÕES TÁTEIS GRANDES: ALIMENTAÇÃO -->
+          <div>
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Almoço / Lanche:</span>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button class="py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200">
+                Comeu tudo
+              </button>
+              <button class="py-1.5 px-2 rounded-lg bg-amber-500 text-white font-black text-xs flex items-center justify-center gap-1 shadow-xs">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i> Metade
+              </button>
+              <button class="py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200">
+                Recusou
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 text-center text-xs">
+            <div class="p-2 rounded-xl bg-sky-50 border border-sky-200">
+              <p class="text-[9px] font-bold text-sky-700 uppercase">Hidratação</p>
+              <p class="font-black text-sky-900">500 ml 💧</p>
+            </div>
+            <div class="p-2 rounded-xl bg-indigo-50 border border-indigo-200">
+              <p class="text-[9px] font-bold text-indigo-700 uppercase">Soninho</p>
+              <p class="font-black text-indigo-900">45 min 😴</p>
+            </div>
+            <div class="p-2 rounded-xl bg-rose-50 border border-rose-200">
+              <p class="text-[9px] font-bold text-rose-700 uppercase">Fralda Troca</p>
+              <p class="font-black text-rose-900">2x Xixi</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD ALUNOS 3 E 4: LAURA MENDES E HELENA COSTA (COMPACTOS) -->
+        <div class="grid grid-cols-2 gap-2">
+          <div class="p-2.5 rounded-xl bg-white border border-slate-200 text-xs">
+            <p class="font-extrabold text-slate-800">Laura Mendes</p>
+            <p class="text-[10px] text-slate-500">2 anos • Almoço 100%</p>
+            <span class="inline-block mt-1 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-bold">Rotina OK</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white border border-slate-200 text-xs">
+            <p class="font-extrabold text-slate-800">Helena Costa</p>
+            <p class="text-[10px] text-slate-500">2 anos • Sono 1h20m</p>
+            <span class="inline-block mt-1 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-bold">Rotina OK</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTÃO FLUTUANTE INFERIOR -->
+      <div class="p-3 bg-white border-t border-slate-200">
+        <button class="w-full touch-target py-3 rounded-2xl bg-[#1E6F9F] hover:bg-[#144e70] text-white font-extrabold text-xs shadow-md shadow-[#1E6F9F]/30 flex items-center justify-center gap-2 transition active:scale-95">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Salvar e Enviar Notificação aos Pais</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TELA 03: VISÃO DOS PAIS - AGENDA DO DIA + ALERTA DE INSUMOS              -->
+    <!-- ========================================================================= -->
+    <section id="screen-tela3" class="screen-content flex-1 flex flex-col bg-slate-50 hidden">
+      
+      <!-- CABEÇALHO DO ALUNO (FAMÍLIA) -->
+      <header class="bg-gradient-to-r from-[#1E6F9F] to-sky-700 text-white p-4 sticky top-0 z-30 shadow-md">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=120&auto=format&fit=crop&q=80" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-white shadow">
+            <div>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/20 text-sky-100 uppercase tracking-wider">Maternal I • Tarde</span>
+              <h2 class="text-base font-black leading-tight">Lucas Silva</h2>
+              <p class="text-xs text-sky-100 font-medium">Professora: Tia Beatriz</p>
+            </div>
+          </div>
+          <img src="assets/logo.jpg" class="w-10 h-10 rounded-xl object-cover ring-1 ring-white/50 shadow">
+        </div>
+      </header>
+
+      <!-- CONTEÚDO DA AGENDA DIÁRIA -->
+      <div class="p-3.5 space-y-3.5 overflow-y-auto flex-1">
+
+        <!-- BANNER DE REPOSIÇÃO DE INSUMOS -->
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 flex items-start gap-3 shadow-xs">
+          <div class="p-2 rounded-xl bg-amber-200 text-amber-800 shrink-0">
+            <i data-lucide="package" class="w-5 h-5"></i>
+          </div>
+          <div class="text-xs">
+            <h4 class="font-extrabold text-amber-950 text-xs">Status da Mochila & Insumos</h4>
+            <p class="text-amber-900/90 text-[11px] mt-0.5 leading-snug">
+              Fraldas: <strong>Restam 8 unidades</strong> (suficiente para 2 dias). Lenço umedecido em nível ideal.
+            </p>
+          </div>
+        </div>
+
+        <!-- RESUMO VISUAL EM CARDS (ALMOÇO, ÁGUA, SONO, HIGIENE) -->
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+              <i data-lucide="utensils" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase">Almoço</p>
+              <p class="text-xs font-black text-slate-800">Comeu tudo ✨</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+              <i data-lucide="droplets" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase">Água</p>
+              <p class="text-xs font-black text-slate-800">800 ml (Ótima)</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+              <i data-lucide="moon" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase">Soninho</p>
+              <p class="text-xs font-black text-slate-800">1h30 (Tranquilo)</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
+              <i data-lucide="smile" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase">Higiene</p>
+              <p class="text-xs font-black text-slate-800">Normal (Sem assadura)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMELINE COMPLETA DO DIA -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs space-y-3">
+          <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="clock" class="w-3.5 h-3.5 text-[#1E6F9F]"></i>
+            <span>Linha do Tempo de Hoje</span>
+          </h4>
+
+          <div class="space-y-3 pl-2 border-l-2 border-sky-200 ml-2">
+            <div class="relative pl-3">
+              <span class="absolute -left-[19px] top-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-emerald-100"></span>
+              <p class="text-[10px] font-bold text-slate-400">13:10 • Recepção</p>
+              <p class="text-xs font-bold text-slate-800">Entrada na escolinha acompanhado do pai Roberto.</p>
+            </div>
+
+            <div class="relative pl-3">
+              <span class="absolute -left-[19px] top-0.5 w-3 h-3 rounded-full bg-sky-500 ring-4 ring-sky-100"></span>
+              <p class="text-[10px] font-bold text-slate-400">14:20 • Lanche Coletivo</p>
+              <p class="text-xs font-bold text-slate-800">Papinha de legumes frescos + banana amassada com aveia.</p>
+            </div>
+
+            <div class="relative pl-3">
+              <span class="absolute -left-[19px] top-0.5 w-3 h-3 rounded-full bg-indigo-500 ring-4 ring-indigo-100"></span>
+              <p class="text-[10px] font-bold text-slate-400">15:00 às 16:30 • Descanso</p>
+              <p class="text-xs font-bold text-slate-800">Dormiu ouvindo música instrumental infantil.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECADO DA PROFESSORA TIA MARIANA -->
+        <div class="bg-rose-50/70 border border-rose-200 rounded-2xl p-3.5 space-y-1.5 shadow-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-rose-200 text-rose-800 flex items-center justify-center font-bold text-xs">
+              💌
+            </span>
+            <p class="text-xs font-extrabold text-rose-950">Recadinho Carinhoso da Tia Beatriz:</p>
+          </div>
+          <p class="text-xs font-medium text-slate-800 leading-relaxed italic pl-1">
+            "Lucas participou super bem da roda de música hoje! Adorou imitar os animais com os amigos e interagiu bastante. Um amorzinho de dia!"
+          </p>
+        </div>
+
+      </div>
+
+      <!-- BOTÃO "CONFIRMAR LEITURA (CIENTE)" -->
+      <div class="p-3 bg-white border-t border-slate-200 space-y-1.5">
+        <button class="w-full touch-target py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 transition active:scale-95">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Confirmar Leitura (Ciente dos Pais)</span>
+        </button>
+        <p class="text-[10px] font-semibold text-center text-slate-400">
+          ✓ Confirmado pela mamãe Juliana às 17:15
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TELA 04: CENTRAL DE INFORMES E CONTROLE DE MEDICAMENTOS                   -->
+    <!-- ========================================================================= -->
+    <section id="screen-tela4" class="screen-content flex-1 flex flex-col bg-slate-50 hidden">
+      
+      <!-- CABEÇALHO -->
+      <header class="bg-[#1E6F9F] text-white p-4 sticky top-0 z-30 shadow-md">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold text-sky-200 uppercase tracking-wider">Mural da Escola & Saúde</span>
+            <h2 class="text-base font-black leading-tight">Informes & Farmácia</h2>
+          </div>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-white/20 text-white">Escola Modelo Horizonte</span>
+        </div>
+      </header>
+
+      <div class="p-3.5 space-y-3.5 overflow-y-auto flex-1">
+        
+        <!-- CARD DE MEDICAMENTO CONTROLADO DO DIA (PRESCRIÇÃO) -->
+        <div class="bg-white rounded-2xl border-2 border-emerald-500 p-3.5 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-xl bg-emerald-100 text-emerald-800">
+                <i data-lucide="pill" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <p class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Prescrição Médica Registrada</p>
+                <h3 class="font-extrabold text-slate-900 text-xs">Paracetamol Infantil (Gotas)</h3>
+              </div>
+            </div>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+              ✓ Aplicado
+            </span>
+          </div>
+
+          <!-- DETALHES DA ADMINISTRAÇÃO -->
+          <div class="bg-emerald-50/60 p-2.5 rounded-xl text-xs space-y-1 text-slate-700 border border-emerald-200">
+            <div class="flex justify-between font-semibold">
+              <span class="text-slate-500">Dosagem:</span>
+              <span class="font-bold text-slate-900">15 gotas com água</span>
+            </div>
+            <div class="flex justify-between font-semibold">
+              <span class="text-slate-500">Horário Previsto:</span>
+              <span class="font-bold text-slate-900">14:00</span>
+            </div>
+            <div class="flex justify-between font-semibold text-emerald-800">
+              <span>Administrado por:</span>
+              <span class="font-black">Tia Beatriz às 14:02</span>
+            </div>
+            <p class="text-[11px] text-slate-600 pt-1 border-t border-emerald-200/80">
+              <em>Obs: "Temperatura aferida antes da dose: 37.4°C. Nova aferição às 14:45: 36.6°C (criança sem febre)."</em>
+            </p>
+          </div>
+        </div>
+
+        <!-- MURAL DE COMUNICADOS OFICIAIS -->
+        <div class="space-y-2.5">
+          <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span>Mural Oficial de Comunicados</span>
+          </h4>
+
+          <!-- COMUNICADO 1: FESTA DA FAMÍLIA COM STATUS DE LEITURA -->
+          <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-extrabold text-slate-900 text-xs leading-snug">
+                🎈 Festa da Família 2026 — Sábado às 10h
+              </h3>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 shrink-0">Geral</span>
+            </div>
+            <p class="text-[11px] text-slate-600 leading-relaxed">
+              Convidamos todos os pais, mães e responsáveis para nossa manhã especial de oficinas, piquenique e apresentações musicais dos pequenos no pátio central da Escola Modelo Horizonte.
+            </p>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px]">
+              <span class="font-semibold text-slate-400">Data: Sábado, 24/11</span>
+              <span class="font-extrabold text-emerald-700 flex items-center gap-1">
+                <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                <span>42 / 45 pais cientes (93%)</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- COMUNICADO 2: CARDÁPIO SEMANAL -->
+          <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs space-y-1.5">
+            <div class="flex items-center justify-between">
+              <h3 class="font-extrabold text-slate-900 text-xs">
+                🥗 Cardápio Nutricional da Próxima Semana
+              </h3>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Nutrição</span>
+            </div>
+            <p class="text-[11px] text-slate-600">
+              Supervisionado pela Nutricionista Infantil: alimentos frescos e sem adição de açúcares.
+            </p>
+            <div class="pt-1 text-right">
+              <span class="text-[11px] font-bold text-[#1E6F9F] hover:underline cursor-pointer">Ver Tabela em PDF →</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTÃO INFERIOR -->
+      <div class="p-3 bg-white border-t border-slate-200">
+        <button class="w-full touch-target py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+          <i data-lucide="file-plus" class="w-4 h-4 text-emerald-600"></i>
+          <span>Enviar Nova Receita / Atestado Médico</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TELA 05: PORTARIA SEGURA - REGISTRO DE SAÍDA COM PIN / QR CODE            -->
+    <!-- ========================================================================= -->
+    <section id="screen-tela5" class="screen-content flex-1 flex flex-col bg-slate-50 hidden">
+      
+      <!-- CABEÇALHO DA PORTARIA -->
+      <header class="bg-slate-900 text-white p-4 sticky top-0 z-30 shadow-md">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </span>
+            <div>
+              <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Portaria Segura</p>
+              <h2 class="text-sm font-extrabold leading-tight">Controle de Saída Escolar</h2>
+            </div>
+          </div>
+          <span class="text-[10px] font-black px-2 py-1 rounded-lg bg-white/10 text-slate-300">
+            Posto 01 • Portão Principal
+          </span>
+        </div>
+      </header>
+
+      <div class="p-3.5 space-y-3 overflow-y-auto flex-1">
+        
+        <!-- CARD DO ALUNO E VALIDAÇÃO DE SAÍDA -->
+        <div class="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-sm text-center space-y-3">
+          
+          <div class="flex items-center justify-center gap-3">
+            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=100&auto=format&fit=crop&q=80" class="w-14 h-14 rounded-2xl object-cover ring-2 ring-emerald-500 shadow">
+            <div class="text-left">
+              <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800">Maternal I</span>
+              <h3 class="font-black text-slate-900 text-base leading-tight">Lucas Silva</h3>
+              <p class="text-xs text-slate-500 font-semibold">Saída Prevista: 17:30</p>
+            </div>
+          </div>
+
+          <!-- CÓDIGO PIN TEMPORÁRIO E QR CODE DINÂMICO -->
+          <div class="bg-slate-50 border-2 border-dashed border-emerald-400 rounded-2xl p-3.5 space-y-2">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Código de Liberação do Dia</p>
+            
+            <!-- PIN EM DESTAQUE -->
+            <div class="inline-block px-4 py-2 rounded-xl bg-slate-900 text-emerald-400 font-mono text-2xl font-black tracking-widest shadow-inner">
+              #8492
+            </div>
+
+            <!-- QR CODE SIMULADO DE ALTA RESOLUÇÃO -->
+            <div class="w-28 h-28 mx-auto bg-white p-2 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center">
+              <svg viewBox="0 0 100 100" class="w-full h-full text-slate-900 fill-current">
+                <!-- QR CODE GEOMETRIA VETORIAL LIMPA -->
+                <rect x="0" y="0" width="30" height="30" rx="3" fill="#0f172a"/>
+                <rect x="6" y="6" width="18" height="18" rx="2" fill="#ffffff"/>
+                <rect x="10" y="10" width="10" height="10" fill="#0f172a"/>
+
+                <rect x="70" y="0" width="30" height="30" rx="3" fill="#0f172a"/>
+                <rect x="76" y="6" width="18" height="18" rx="2" fill="#ffffff"/>
+                <rect x="80" y="10" width="10" height="10" fill="#0f172a"/>
+
+                <rect x="0" y="70" width="30" height="30" rx="3" fill="#0f172a"/>
+                <rect x="6" y="76" width="18" height="18" rx="2" fill="#ffffff"/>
+                <rect x="10" y="80" width="10" height="10" fill="#0f172a"/>
+
+                <!-- Padrões internos -->
+                <rect x="40" y="10" width="8" height="8" fill="#0f172a"/>
+                <rect x="52" y="15" width="8" height="8" fill="#0f172a"/>
+                <rect x="40" y="35" width="20" height="8" fill="#0f172a"/>
+                <rect x="35" y="55" width="10" height="10" fill="#0f172a"/>
+                <rect x="50" y="65" width="12" height="12" fill="#0f172a"/>
+                <rect x="75" y="45" width="15" height="15" fill="#0f172a"/>
+                <rect x="75" y="75" width="20" height="8" fill="#0f172a"/>
+              </svg>
+            </div>
+            <p class="text-[9px] font-bold text-slate-400">Escaneie pelo leitor da portaria ou digite o PIN</p>
+          </div>
+        </div>
+
+        <!-- LISTA DE PESSOAS AUTORIZADAS CADASTRADAS PELOS PAIS -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center justify-between">
+            <span>Pessoas Autorizadas a Retirar:</span>
+            <span class="text-emerald-700 font-bold">3 Cadastradas</span>
+          </h4>
+
+          <!-- PESSOA 1: ROBERTO (PAI) -->
+          <div class="p-2.5 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-sky-100 text-[#1E6F9F] flex items-center justify-center font-extrabold text-xs">
+                RS
+              </div>
+              <div>
+                <p class="font-extrabold text-slate-900 text-xs leading-tight">Roberto Silva</p>
+                <p class="text-[10px] text-slate-500 font-medium">Pai • CPF: ***.492.180-**</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+              Autorizado
+            </span>
+          </div>
+
+          <!-- PESSOA 2: JULIANA (MÃE) -->
+          <div class="p-2.5 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-extrabold text-xs">
+                JS
+              </div>
+              <div>
+                <p class="font-extrabold text-slate-900 text-xs leading-tight">Juliana Silva</p>
+                <p class="text-[10px] text-slate-500 font-medium">Mãe • CPF: ***.318.900-**</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+              Autorizada
+            </span>
+          </div>
+
+          <!-- PESSOA 3: CARLA (TIA) -->
+          <div class="p-2.5 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-extrabold text-xs">
+                CS
+              </div>
+              <div>
+                <p class="font-extrabold text-slate-900 text-xs leading-tight">Carla Silva</p>
+                <p class="text-[10px] text-slate-500 font-medium">Tia • Doc com foto validado</p>
+              </div>
+            </div>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+              Autorizada
+            </span>
+          </div>
+        </div>
+
+        <!-- HISTÓRICO DE CHECK-OUT -->
+        <div class="bg-slate-100 p-2.5 rounded-xl text-xs text-slate-600 flex items-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+          <p class="text-[11px] leading-tight font-medium">
+            Última saída registrada: <strong>Ontem às 17:42</strong> (Retirado pelo pai Roberto com validação biométrica/PIN).
+          </p>
+        </div>
+
+      </div>
+
+      <!-- BOTÃO DE LIBERAÇÃO RÁPIDA NA PORTARIA -->
+      <div class="p-3 bg-white border-t border-slate-200">
+        <button class="w-full touch-target py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 transition active:scale-95">
+          <i data-lucide="unlock" class="w-4 h-4"></i>
+          <span>Confirmar Saída do Aluno • Liberar Catraca</span>
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- JAVASCRIPT DO SHOWCASE -->
+  <script>
+    // Gerenciamento de Telas
+    function setScreen(screenId) {
+      document.querySelectorAll('.screen-content').forEach(el => el.classList.add('hidden'));
+      const activeEl = document.getElementById('screen-' + screenId);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      // Atualiza botões da barra superior
+      document.querySelectorAll('.screen-nav-btn').forEach(btn => {
+        btn.classList.remove('bg-[#1E6F9F]', 'text-white', 'shadow-xs');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      const activeBtn = document.getElementById('nav-' + screenId);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'text-slate-700');
+        activeBtn.classList.add('bg-[#1E6F9F]', 'text-white', 'shadow-xs');
+      }
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    // Alternar Visualização Mobile vs Desktop
+    function toggleViewMode(mode) {
+      const container = document.getElementById('app-viewport-container');
+      const btnMobile = document.getElementById('btn-view-mobile');
+      const btnDesktop = document.getElementById('btn-view-desktop');
+
+      if (mode === 'desktop') {
+        container.classList.remove('mobile-frame');
+        container.classList.add('desktop-frame');
+        btnDesktop.classList.remove('bg-slate-100', 'text-slate-700');
+        btnDesktop.classList.add('bg-slate-800', 'text-white');
+        btnMobile.classList.remove('bg-slate-800', 'text-white');
+        btnMobile.classList.add('bg-slate-100', 'text-slate-700');
+      } else {
+        container.classList.remove('desktop-frame');
+        container.classList.add('mobile-frame');
+        btnMobile.classList.remove('bg-slate-100', 'text-slate-700');
+        btnMobile.classList.add('bg-slate-800', 'text-white');
+        btnDesktop.classList.remove('bg-slate-800', 'text-white');
+        btnDesktop.classList.add('bg-slate-100', 'text-slate-700');
+      }
+    }
+
+    // Inicialização e parâmetros URL (ex: ?screen=tela2&mode=capture)
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) window.lucide.createIcons();
+
+      const params = new URLSearchParams(window.location.search);
+      const requestedScreen = params.get('screen') || 'tela1';
+      const requestedView = params.get('view') || 'mobile';
+      const isCapture = params.get('capture') === 'true';
+
+      if (isCapture) {
+        document.body.classList.add('capture-mode');
+      }
+
+      setScreen(requestedScreen);
+      toggleViewMode(requestedView);
+    });
+  </script>
+
+</body>
+</html>

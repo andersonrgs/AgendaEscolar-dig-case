@@ -1,0 +1,49 @@
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Variáveis de ambiente, credenciais e segredos
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+secrets/
+credentials/
+
+# Backups e anotações privadas
+.private/
+*.private
+*.bak
+*.backup
+*não-salvo*
+*Documento*
+*.tmp
+*.log
+
+# Dumps e bases locais
+*.dump
+*.sql.bak
+
+# Builds, caches e outputs
+dist/
+build/
+.next/
+out/
+.nuxt/
+.output/
+.cache/
+__pycache__/
+*.pyc
+
+# IDEs e Sistema Operacional
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
